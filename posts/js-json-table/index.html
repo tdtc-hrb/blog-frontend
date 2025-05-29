@@ -1,0 +1,499 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.8.0"><title>动态生成table</title></head> <body> <h1>动态生成table</h1>  <p><em>根据JSON数据，使用TS/JS生成HTML的表格</em></p> <p>2021-10-02</p> <p>Written by: tdtc</p> <h1 id="一json数据源">一、JSON数据源</h1>
+<blockquote>
+<p><a href="http://www.bejson.com/go.html?u=http://bejson.com/aboutJSON.html">JSON</a></p>
+<blockquote>
+</blockquote>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>JSON是一种取代XML的数据结构,和xml相比,它更小巧但描述能力却不差,由于它的小巧所以网络传输数据将减少更多流量从而加快速度,</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>那么,JSON到底是什么?</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>JSON就是一串字符串 只不过元素会使用特定的符号标注。</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>{} 双括号表示对象</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>[] 中括号表示数组</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>"" 双引号内是属性或值</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>: 冒号表示后者是前者的值(这个值可以是字符串、数字、也可以是另一个数组或对象)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>所以 {"name": "Michael"} 可以理解为是一个包含name为Michael的对象</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>而[{"name": "Michael"},{"name": "Jerry"}]就表示包含两个对象的数组</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>当然了,你也可以使用{"name":["Michael","Jerry"]}来简化上面一部,这是一个拥有一个name数组的对象</span></span></code></pre>
+<p>详细介绍请参见<a href="http://www.w3school.com.cn/json/">W3SCHOOL</a>
+<a href="http://www.ecma-international.org/ecma-262/5.1/">JSON规范</a></p>
+<h2 id="1-students">1. students</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">var</span><span style="color:#E1E4E8"> students </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1001"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"李X"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1002"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"张X威"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1003"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"于X洋"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1004"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"张X扬"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1005"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"周X"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1006"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"王X"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1007"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"李X朋"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1008"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"邬X春"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 5"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1009"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"李X"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 5"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1010"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"孙X丽"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]}</span></span>
+<span class="line"><span style="color:#E1E4E8">];</span></span></code></pre>
+<h1 id="二函数设计">二、函数设计</h1>
+<blockquote>
+<p>所谓的动态就是使用删表和写表的操作。</p>
+</blockquote>
+<h2 id="1-删除表格">1. 删除表格</h2>
+<blockquote>
+<p>删除除了表头之外的数据。</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#E1E4E8">CourseInf.</span><span style="color:#B392F0">deleteTable</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">table</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> mBody </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> table.</span><span style="color:#B392F0">getElementsByTagName</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'tbody'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> len </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> table.rows.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> len; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">		table.</span><span style="color:#B392F0">removeChild</span><span style="color:#E1E4E8">(mBody[</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"><span style="color:#E1E4E8">	}</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<h2 id="2-写表格">2. 写表格</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#E1E4E8">CourseInf.</span><span style="color:#B392F0">writeTable</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">obj</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">table</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> array </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> className </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> obj.value;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> iAcc </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> rowNum </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> str </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> ""</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> CourseInf.gradeArrays.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">		for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> key </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> CourseInf.gradeArrays[i]) {</span></span>
+<span class="line"><span style="color:#F97583">			if</span><span style="color:#E1E4E8"> (CourseInf.gradeArrays[i][key] </span><span style="color:#F97583">==</span><span style="color:#E1E4E8"> className){</span></span>
+<span class="line"><span style="color:#E1E4E8">				CourseInf.flag </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">				rowNum</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">			}</span></span>
+<span class="line"><span style="color:#F97583">			else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">				if</span><span style="color:#E1E4E8"> (CourseInf.flag) {</span></span>
+<span class="line"><span style="color:#E1E4E8">					array[key] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> CourseInf.gradeArrays[i][key];</span></span>
+<span class="line"><span style="color:#E1E4E8">				}</span></span>
+<span class="line"><span style="color:#E1E4E8">			}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">		}</span></span>
+<span class="line"><span style="color:#E1E4E8">		CourseInf.flag </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;		</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">		if</span><span style="color:#E1E4E8"> (rowNum </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">			for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> array) {</span></span>
+<span class="line"><span style="color:#E1E4E8">				str </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> array[j];</span></span>
+<span class="line"><span style="color:#E1E4E8">				CourseInf.classArrays[iAcc] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> str;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">				iAcc</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">			}</span></span>
+<span class="line"><span style="color:#E1E4E8">			CourseInf.</span><span style="color:#B392F0">insertTable</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, CourseInf.classArrays, table);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">		}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">		rowNum </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;		</span></span>
+<span class="line"><span style="color:#E1E4E8">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">	CourseInf.iCount </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<p>如果数组中某个键值（cName）等于className则执行：标志为真；并且行数+1操作。
+否则，判断标志是否为真？为真读取数据。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (CourseInf.gradeArrays[i][key] </span><span style="color:#F97583">==</span><span style="color:#E1E4E8"> className){</span></span>
+<span class="line"><span style="color:#E1E4E8">  CourseInf.flag </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  rowNum</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (CourseInf.flag) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    array[key] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> CourseInf.gradeArrays[i][key];</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>行数不等于0时，插入表格数据</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#E1E4E8">CourseInf.</span><span style="color:#B392F0">insertTable</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">colNum</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">rowNum</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">array</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">table</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> mBody </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"tbody"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> rowNum; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">		var</span><span style="color:#E1E4E8"> mTr </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"tr"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">		var</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">		for</span><span style="color:#E1E4E8"> (j </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; j </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> colNum; j</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">			var</span><span style="color:#E1E4E8"> mCell </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"td"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">			var</span><span style="color:#E1E4E8"> mText </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createTextNode</span><span style="color:#E1E4E8">(array[j </span><span style="color:#F97583">+</span><span style="color:#E1E4E8"> CourseInf.iCount]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">			mCell.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mText);</span></span>
+<span class="line"><span style="color:#E1E4E8">			mTr.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mCell);</span></span>
+<span class="line"><span style="color:#E1E4E8">		}</span></span>
+<span class="line"><span style="color:#E1E4E8">		CourseInf.iCount </span><span style="color:#F97583">+=</span><span style="color:#E1E4E8"> j;</span></span>
+<span class="line"><span style="color:#E1E4E8">		mBody.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mTr);</span></span>
+<span class="line"><span style="color:#E1E4E8">	}</span></span>
+<span class="line"><span style="color:#E1E4E8">	table.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mBody);</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<h2 id="3-删除重复项">3. 删除重复项</h2>
+<p>我们在读取班级列表的时候，希望一个班级只能出现一次。
+所以，我们要处理多个“class 1”和“class 5”的问题。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> array.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">  obj[array[i]] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p>obj[array[i]] = true;<br>
+也许这么看就容易懂了<br>
+obj[key] = true;</p>
+</blockquote>
+<h1 id="附">附</h1>
+<h2 id="dynamictablehtml">dynamicTable.html</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="html"><code><span class="line"><span style="color:#E1E4E8">&#x3C;!</span><span style="color:#85E89D">DOCTYPE</span><span style="color:#B392F0"> HTML</span><span style="color:#B392F0"> PUBLIC</span><span style="color:#9ECBFF"> "-//W3C//DTD HTML 4.01 Transitional//EN"</span><span style="color:#9ECBFF"> "http://www.w3.org/TR/html4/loose.dtd"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">html</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">	&#x3C;</span><span style="color:#85E89D">head</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">	&#x3C;</span><span style="color:#85E89D">meta</span><span style="color:#B392F0"> http-equiv</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"Content-Type"</span><span style="color:#B392F0"> content</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"text/html; charset=gb2312"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">	&#x3C;</span><span style="color:#85E89D">title</span><span style="color:#E1E4E8">>动态创建表格&#x3C;/</span><span style="color:#85E89D">title</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">	&#x3C;</span><span style="color:#85E89D">script</span><span style="color:#B392F0"> type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"text/javascript"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#F97583">		var</span><span style="color:#E1E4E8"> students </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">			{</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1001"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"李X"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">			{</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1002"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"张X威"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">			{</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1003"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"于X洋"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">			{</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1004"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"张X扬"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">			{</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1005"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"周X"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">			{</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1006"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"王X"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">			{</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1007"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"李X朋"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">			{</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1008"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"邬X春"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">			{</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 5"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1009"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"李X"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]},</span></span>
+<span class="line"><span style="color:#E1E4E8">			{</span><span style="color:#9ECBFF">"cName"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"class 5"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ID"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"1010"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"孙X丽"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"course"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"英语"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"高数"</span><span style="color:#E1E4E8">], </span><span style="color:#9ECBFF">"elective"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"政治经济学"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"哲学"</span><span style="color:#E1E4E8">]}</span></span>
+<span class="line"><span style="color:#E1E4E8">		];</span></span>
+<span class="line"><span style="color:#E1E4E8">	&#x3C;/</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">	&#x3C;</span><span style="color:#85E89D">script</span><span style="color:#B392F0"> type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"text/javascript"</span><span style="color:#B392F0"> src</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"dynamicTable.js"</span><span style="color:#E1E4E8"> >&#x3C;/</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">	&#x3C;/</span><span style="color:#85E89D">head</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">html</span><span style="color:#E1E4E8">></span></span></code></pre>
+<ul>
+<li>js version</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="html"><code><span class="line"><span style="color:#E1E4E8">	&#x3C;</span><span style="color:#85E89D">body</span><span style="color:#B392F0"> onLoad</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"CourseInf.loadData(students)"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		&#x3C;</span><span style="color:#85E89D">select</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"className"</span><span style="color:#B392F0"> onChange</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"CourseInf.readClasses(this)"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		&#x3C;/</span><span style="color:#85E89D">select</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		&#x3C;</span><span style="color:#85E89D">br</span><span style="color:#E1E4E8">>     </span></span>
+<span class="line"><span style="color:#E1E4E8">		&#x3C;</span><span style="color:#85E89D">table</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"tb1"</span><span style="color:#FDAEB7;font-style:italic"> border</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"1"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		  &#x3C;</span><span style="color:#85E89D">tr</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		    &#x3C;</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">>学号&#x3C;/</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		    &#x3C;</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">>姓名&#x3C;/</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		    &#x3C;</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">>必修课&#x3C;/</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		    &#x3C;</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">>选修课&#x3C;/</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		  &#x3C;/</span><span style="color:#85E89D">tr</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		&#x3C;/</span><span style="color:#85E89D">table</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">	&#x3C;/</span><span style="color:#85E89D">body</span><span style="color:#E1E4E8">></span></span></code></pre>
+<ul>
+<li>ts version</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="html"><code><span class="line"><span style="color:#E1E4E8">	&#x3C;</span><span style="color:#85E89D">body</span><span style="color:#B392F0"> onLoad</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"CourseInf.prototype.loadData(students)"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		&#x3C;</span><span style="color:#85E89D">select</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"className"</span><span style="color:#B392F0"> onChange</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"CourseInf.prototype.readClasses(this)"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		&#x3C;/</span><span style="color:#85E89D">select</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		&#x3C;</span><span style="color:#85E89D">br</span><span style="color:#E1E4E8">>     </span></span>
+<span class="line"><span style="color:#E1E4E8">		&#x3C;</span><span style="color:#85E89D">table</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"tb1"</span><span style="color:#FDAEB7;font-style:italic"> border</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"1"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		  &#x3C;</span><span style="color:#85E89D">tr</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		    &#x3C;</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">>学号&#x3C;/</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		    &#x3C;</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">>姓名&#x3C;/</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		    &#x3C;</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">>必修课&#x3C;/</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		    &#x3C;</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">>选修课&#x3C;/</span><span style="color:#85E89D">th</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		  &#x3C;/</span><span style="color:#85E89D">tr</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">		&#x3C;/</span><span style="color:#85E89D">table</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">	&#x3C;/</span><span style="color:#85E89D">body</span><span style="color:#E1E4E8">></span></span></code></pre>
+<h2 id="js">js</h2>
+<blockquote>
+<p>tsc dynamicTable.ts</p>
+</blockquote>
+<ul>
+<li>dynamicTable.ts</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> CourseInf</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#FFAB70">    gradeArrays</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> any</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    static</span><span style="color:#FFAB70"> classArrays</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> any</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8">	[];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFAB70">    iCount</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#FFAB70">    flag</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> boolean</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    constructor</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#79B8FF">        this</span><span style="color:#E1E4E8">.gradeArrays </span><span style="color:#F97583">=</span><span style="color:#E1E4E8">  [];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">        this</span><span style="color:#E1E4E8">.iCount 	</span><span style="color:#F97583">=</span><span style="color:#79B8FF">	0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">        this</span><span style="color:#E1E4E8">.flag 		</span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 	false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    deleteTable</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">table</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> any</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> mBody </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> table.</span><span style="color:#B392F0">getElementsByTagName</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'tbody'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> len </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> table.rows.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> len; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            table.</span><span style="color:#B392F0">removeChild</span><span style="color:#E1E4E8">(mBody[</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    insertTable</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">colNum</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">rowNum</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">array</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> any</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">table</span><span style="color:#F97583"> :</span><span style="color:#B392F0"> HTMLElement</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> mBody </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"tbody"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> rowNum; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">            let</span><span style="color:#E1E4E8"> mTr </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"tr"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">            let</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">            for</span><span style="color:#E1E4E8"> (j </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; j </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> colNum; j</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">                let</span><span style="color:#E1E4E8"> mCell </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"td"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">                let</span><span style="color:#E1E4E8"> mText </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createTextNode</span><span style="color:#E1E4E8">(array[j </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.iCount]);</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">                mCell.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mText);</span></span>
+<span class="line"><span style="color:#E1E4E8">                mTr.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mCell);</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#79B8FF">            this</span><span style="color:#E1E4E8">.iCount </span><span style="color:#F97583">+=</span><span style="color:#E1E4E8"> j;</span></span>
+<span class="line"><span style="color:#E1E4E8">            mBody.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mTr);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        table.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mBody);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    writeTable</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">obj</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> any</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">table</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> any</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> array </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> any</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> className </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> object</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> obj.value;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> iAcc </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> rowNum </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> str </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> ""</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.gradeArrays.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">            for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> key </span><span style="color:#F97583">in</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.gradeArrays[i]) {</span></span>
+<span class="line"><span style="color:#F97583">                if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.gradeArrays[i][key] </span><span style="color:#F97583">==</span><span style="color:#E1E4E8"> className){</span></span>
+<span class="line"><span style="color:#79B8FF">                    this</span><span style="color:#E1E4E8">.flag </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">                    rowNum</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">                }</span></span>
+<span class="line"><span style="color:#F97583">                else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">                    if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.flag) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        array[key] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.gradeArrays[i][key];</span></span>
+<span class="line"><span style="color:#E1E4E8">                    }</span></span>
+<span class="line"><span style="color:#E1E4E8">                }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#79B8FF">            this</span><span style="color:#E1E4E8">.flag </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">            if</span><span style="color:#E1E4E8"> (rowNum </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">                for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> array) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                    str </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> array[j];</span></span>
+<span class="line"><span style="color:#E1E4E8">                    CourseInf.classArrays[iAcc] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> str;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">                    iAcc</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">                }</span></span>
+<span class="line"><span style="color:#79B8FF">                this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">insertTable</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, CourseInf.classArrays, table);</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">            rowNum </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;		</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#79B8FF">        this</span><span style="color:#E1E4E8">.iCount </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    readClasses</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">obj</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> object</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> table </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"tb1"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#79B8FF">        this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">deleteTable</span><span style="color:#E1E4E8">(table);</span></span>
+<span class="line"><span style="color:#79B8FF">        this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">writeTable</span><span style="color:#E1E4E8">(obj, table);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    loadData</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">array</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> any</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> data </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> vals </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#79B8FF">        this</span><span style="color:#E1E4E8">.gradeArrays </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> array;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#E1E4E8"> obj </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"className"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">as</span><span style="color:#79B8FF"> any</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">        // json 中键值为"cName"的value值放到数组中</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> array.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">            for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> array[i]) {</span></span>
+<span class="line"><span style="color:#F97583">                if</span><span style="color:#E1E4E8"> (j </span><span style="color:#F97583">==</span><span style="color:#9ECBFF"> "cName"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">                    data.</span><span style="color:#B392F0">push</span><span style="color:#E1E4E8">(array[i][j]);			</span></span>
+<span class="line"><span style="color:#E1E4E8">            };</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#B392F0"> _toObj</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">array</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> any</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">            let</span><span style="color:#E1E4E8"> obj </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Array</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">            for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> array.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                obj[array[i]] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8"> obj;</span></span>
+<span class="line"><span style="color:#E1E4E8">        };</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#B392F0"> _keys</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">obj</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> object</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">            let</span><span style="color:#E1E4E8"> array </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Array</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">            for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> obj) {</span></span>
+<span class="line"><span style="color:#F97583">                if</span><span style="color:#E1E4E8"> (obj.</span><span style="color:#B392F0">hasOwnProperty</span><span style="color:#E1E4E8">(i)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                    array.</span><span style="color:#B392F0">push</span><span style="color:#E1E4E8">(i);</span></span>
+<span class="line"><span style="color:#E1E4E8">                };</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8"> array;</span></span>
+<span class="line"><span style="color:#E1E4E8">        };</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">        let</span><span style="color:#B392F0"> _uniq</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">array</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> any</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#B392F0"> _keys</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">_toObj</span><span style="color:#E1E4E8">(array));</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">        // 删除重复项</span></span>
+<span class="line"><span style="color:#E1E4E8">        vals </span><span style="color:#F97583">=</span><span style="color:#B392F0"> _uniq</span><span style="color:#E1E4E8">(data);</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">        // Traverse Array</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> vals.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            obj.options.</span><span style="color:#B392F0">add</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Option</span><span style="color:#E1E4E8">(vals[i], vals[i]));</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<ul>
+<li>dynamicTable.js</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">/*</span></span>
+<span class="line"><span style="color:#6A737D"> * 课程信息</span></span>
+<span class="line"><span style="color:#6A737D"> * @author xiaobin</span></span>
+<span class="line"><span style="color:#6A737D"> */</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">var</span><span style="color:#E1E4E8"> CourseInf </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">	gradeArrays :   [],</span></span>
+<span class="line"><span style="color:#E1E4E8">	classArrays :	[],</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">	iCount 		:	</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">	flag 		: 	</span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">CourseInf.</span><span style="color:#B392F0">deleteTable</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">table</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> mBody </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> table.</span><span style="color:#B392F0">getElementsByTagName</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'tbody'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> len </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> table.rows.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> len; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">		table.</span><span style="color:#B392F0">removeChild</span><span style="color:#E1E4E8">(mBody[</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"><span style="color:#E1E4E8">	}</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">CourseInf.</span><span style="color:#B392F0">insertTable</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">colNum</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">rowNum</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">array</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">table</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> mBody </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"tbody"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> rowNum; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">		var</span><span style="color:#E1E4E8"> mTr </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"tr"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">		var</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">		for</span><span style="color:#E1E4E8"> (j </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; j </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> colNum; j</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">			var</span><span style="color:#E1E4E8"> mCell </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"td"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">			var</span><span style="color:#E1E4E8"> mText </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createTextNode</span><span style="color:#E1E4E8">(array[j </span><span style="color:#F97583">+</span><span style="color:#E1E4E8"> CourseInf.iCount]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">			mCell.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mText);</span></span>
+<span class="line"><span style="color:#E1E4E8">			mTr.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mCell);</span></span>
+<span class="line"><span style="color:#E1E4E8">		}</span></span>
+<span class="line"><span style="color:#E1E4E8">		CourseInf.iCount </span><span style="color:#F97583">+=</span><span style="color:#E1E4E8"> j;</span></span>
+<span class="line"><span style="color:#E1E4E8">		mBody.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mTr);</span></span>
+<span class="line"><span style="color:#E1E4E8">	}</span></span>
+<span class="line"><span style="color:#E1E4E8">	table.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(mBody);</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">CourseInf.</span><span style="color:#B392F0">writeTable</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">obj</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">table</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> array </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> className </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> obj.value;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> iAcc </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> rowNum </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> str </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> ""</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> CourseInf.gradeArrays.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">		for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> key </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> CourseInf.gradeArrays[i]) {</span></span>
+<span class="line"><span style="color:#F97583">			if</span><span style="color:#E1E4E8"> (CourseInf.gradeArrays[i][key] </span><span style="color:#F97583">==</span><span style="color:#E1E4E8"> className){</span></span>
+<span class="line"><span style="color:#E1E4E8">				CourseInf.flag </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">				rowNum</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">			}</span></span>
+<span class="line"><span style="color:#F97583">			else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">				if</span><span style="color:#E1E4E8"> (CourseInf.flag) {</span></span>
+<span class="line"><span style="color:#E1E4E8">					array[key] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> CourseInf.gradeArrays[i][key];</span></span>
+<span class="line"><span style="color:#E1E4E8">				}</span></span>
+<span class="line"><span style="color:#E1E4E8">			}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">		}</span></span>
+<span class="line"><span style="color:#E1E4E8">		CourseInf.flag </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;		</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">		if</span><span style="color:#E1E4E8"> (rowNum </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">			for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> array) {</span></span>
+<span class="line"><span style="color:#E1E4E8">				str </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> array[j];</span></span>
+<span class="line"><span style="color:#E1E4E8">				CourseInf.classArrays[iAcc] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> str;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">				iAcc</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">			}</span></span>
+<span class="line"><span style="color:#E1E4E8">			CourseInf.</span><span style="color:#B392F0">insertTable</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, CourseInf.classArrays, table);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">		}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">		rowNum </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;		</span></span>
+<span class="line"><span style="color:#E1E4E8">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">	CourseInf.iCount </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">CourseInf.</span><span style="color:#B392F0">readClasses</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">obj</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> table </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"tb1"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">	CourseInf.</span><span style="color:#B392F0">deleteTable</span><span style="color:#E1E4E8">(table);</span></span>
+<span class="line"><span style="color:#E1E4E8">	CourseInf.</span><span style="color:#B392F0">writeTable</span><span style="color:#E1E4E8">(obj, table);</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">CourseInf.</span><span style="color:#B392F0">loadData</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">array</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> data </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> vals </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">	CourseInf.gradeArrays </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> array;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#E1E4E8"> obj </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"className"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">	// json 中键值为"cName"的value值放到数组中</span></span>
+<span class="line"><span style="color:#F97583">	for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> array.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">		for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> array[i]) {</span></span>
+<span class="line"><span style="color:#F97583">			if</span><span style="color:#E1E4E8"> (j </span><span style="color:#F97583">==</span><span style="color:#9ECBFF"> "cName"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">				data.</span><span style="color:#B392F0">push</span><span style="color:#E1E4E8">(array[i][j]);			</span></span>
+<span class="line"><span style="color:#E1E4E8">		};</span></span>
+<span class="line"><span style="color:#E1E4E8">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#B392F0"> _toObj</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">array</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">		var</span><span style="color:#E1E4E8"> obj </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Array</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">		for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> array.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">			obj[array[i]] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">		}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">		return</span><span style="color:#E1E4E8"> obj;</span></span>
+<span class="line"><span style="color:#E1E4E8">	};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#B392F0"> _keys</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">obj</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">		var</span><span style="color:#E1E4E8"> array </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Array</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">		for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> obj) {</span></span>
+<span class="line"><span style="color:#F97583">			if</span><span style="color:#E1E4E8"> (obj.</span><span style="color:#B392F0">hasOwnProperty</span><span style="color:#E1E4E8">(i)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">				array.</span><span style="color:#B392F0">push</span><span style="color:#E1E4E8">(i);</span></span>
+<span class="line"><span style="color:#E1E4E8">			};</span></span>
+<span class="line"><span style="color:#E1E4E8">		}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">		return</span><span style="color:#E1E4E8"> array;</span></span>
+<span class="line"><span style="color:#E1E4E8">	};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">	var</span><span style="color:#B392F0"> _uniq</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">array</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">		return</span><span style="color:#B392F0"> _keys</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">_toObj</span><span style="color:#E1E4E8">(array));</span></span>
+<span class="line"><span style="color:#E1E4E8">	};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">	// 删除重复项</span></span>
+<span class="line"><span style="color:#E1E4E8">	vals </span><span style="color:#F97583">=</span><span style="color:#B392F0"> _uniq</span><span style="color:#E1E4E8">(data);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">	// Traverse Array</span></span>
+<span class="line"><span style="color:#F97583">	for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> vals.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">		obj.options.</span><span style="color:#B392F0">add</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Option</span><span style="color:#E1E4E8">(vals[i], vals[i]));</span></span>
+<span class="line"><span style="color:#E1E4E8">	};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>  <footer> <a href="https://tdtc-hrb.github.io/blog-frontend">blog-frontend</a> <a href="https://tdtc-hrb.github.io/com-vc">com-vc</a> <a href="https://tdtc-hrb.github.io/css-tws">css-tws</a> <a href="https://tdtc-hrb.github.io/ops-win">ops-win</a> </footer> </body></html>

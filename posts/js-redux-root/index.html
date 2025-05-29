@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.8.0"><title>rootredux</title></head> <body> <h1>rootredux</h1>  <p><em>分解redux，以理解他</em></p> <p>2020-04-10</p> <p>Written by: tdtc</p> <h1 id="1-split">1. split</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#B392F0"> reducer</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">state</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">action</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    switch</span><span style="color:#E1E4E8"> (action.type) {</span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#9ECBFF"> 'ADD_RECIPE'</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8"> Object.</span><span style="color:#B392F0">assign</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">                {}, state, {</span></span>
+<span class="line"><span style="color:#E1E4E8">                    recipes: state.recipes.</span><span style="color:#B392F0">concat</span><span style="color:#E1E4E8">({name : action.name})</span></span>
+<span class="line"><span style="color:#E1E4E8">            });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#9ECBFF"> 'ADD_INGREDIENT'</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">            const</span><span style="color:#79B8FF"> myIngredients</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        name : action.name,</span></span>
+<span class="line"><span style="color:#E1E4E8">                        quantity: action.quantity,</span></span>
+<span class="line"><span style="color:#E1E4E8">                        measure: action.measure,</span></span>
+<span class="line"><span style="color:#E1E4E8">                        recipe: action.recipe</span></span>
+<span class="line"><span style="color:#E1E4E8">                        };</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8"> Object.</span><span style="color:#B392F0">assign</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">                {}, state, {</span></span>
+<span class="line"><span style="color:#E1E4E8">                    ingredients: state.ingredients.</span><span style="color:#B392F0">concat</span><span style="color:#E1E4E8">(myIngredients)</span></span>
+<span class="line"><span style="color:#E1E4E8">            });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> state;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="recipereducer">recipeReducer</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#B392F0"> recipeReducer</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">stat</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">action</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    switch</span><span style="color:#E1E4E8"> (action.type) {</span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#9ECBFF"> 'ADD_RECIPE'</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">            return</span></span>
+<span class="line"><span style="color:#E1E4E8">Object.</span><span style="color:#B392F0">assign</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">                {}, state, {</span></span>
+<span class="line"><span style="color:#E1E4E8">                    ingredients: state.ingredients.</span><span style="color:#B392F0">concat</span><span style="color:#E1E4E8">(myIngredients)</span></span>
+<span class="line"><span style="color:#E1E4E8">            });</span></span>
+<span class="line"><span style="color:#E1E4E8">} </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> recipes; }</span></span></code></pre>
+<h2 id="ingredientreducer">ingredientReducer</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#B392F0"> ingredientReducer</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">state</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">action</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    switch</span><span style="color:#E1E4E8"> (action.type) {</span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#9ECBFF"> 'ADD_INGREDIENT'</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">            const</span><span style="color:#79B8FF"> myIngredients</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        name : action.name,</span></span>
+<span class="line"><span style="color:#E1E4E8">                        quantity: action.quantity,</span></span>
+<span class="line"><span style="color:#E1E4E8">                        measure: action.measure,</span></span>
+<span class="line"><span style="color:#E1E4E8">                        recipe: action.recipe</span></span>
+<span class="line"><span style="color:#E1E4E8">                        };</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8"> Object.</span><span style="color:#B392F0">assign</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">                {}, state, {</span></span>
+<span class="line"><span style="color:#E1E4E8">                    ingredients: state.ingredients.</span><span style="color:#B392F0">concat</span><span style="color:#E1E4E8">(myIngredients)</span></span>
+<span class="line"><span style="color:#E1E4E8">            });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> state;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>  <footer> <a href="https://tdtc-hrb.github.io/blog-frontend">blog-frontend</a> <a href="https://tdtc-hrb.github.io/com-vc">com-vc</a> <a href="https://tdtc-hrb.github.io/css-tws">css-tws</a> <a href="https://tdtc-hrb.github.io/ops-win">ops-win</a> </footer> </body></html>

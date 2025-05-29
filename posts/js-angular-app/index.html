@@ -1,0 +1,146 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.8.0"><title>Angular 的HttpClient应用</title></head> <body> <h1>Angular 的HttpClient应用</h1>  <p><em>HttpClientModule, Observable</em></p> <p>2025-05-29</p> <p>Written by: tdtc</p> <h1 id="prepare">Prepare</h1>
+<ul>
+<li>install Angular CLI</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#E1E4E8">npm install </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">g @angular</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">cli</span></span></code></pre>
+<ul>
+<li>create project</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">npx</span><span style="color:#9ECBFF"> @angular/cli</span><span style="color:#9ECBFF"> new</span><span style="color:#9ECBFF"> userDetails-client</span><span style="color:#79B8FF"> --style=css</span><span style="color:#79B8FF"> --routing=false</span><span style="color:#79B8FF"> --skip-tests</span></span></code></pre>
+<h2 id="v17">v17+</h2>
+<blockquote>
+<p>From Angular v17 onwards, Standalone is now the new default for the CLI.
+So when you create a new project, you won’t have any modules in it if you don’t specify anything.<br>
+However, it is still possible to create a module-based app by using the <a href="https://stackoverflow.com/a/77457122">“—no-standalone”</a> flag :</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>npx @angular/cli new userDetails-client --no-standalone --style=css --routing=false --skip-tests</span></span></code></pre>
+<h1 id="angular-struct">Angular struct</h1>
+<h2 id="angular-module">Angular module</h2>
+<blockquote>
+<p>app/app.module.ts</p>
+</blockquote>
+<p>Add system modules and user components</p>
+<ul>
+<li>system module
+example for: httpclient module</li>
+</ul>
+<p>import pack:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { HttpClientModule } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "@angular/common/http"</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<p>declare Decorator:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// import HttpClientModule after BrowserModule.</span></span>
+<span class="line"><span style="color:#E1E4E8">    HttpClientModule,</span></span></code></pre>
+<ul>
+<li>user component
+See the next section(“Angular Component - add component”) for examples of user components.</li>
+</ul>
+<h2 id="angular-component">Angular Component</h2>
+<blockquote>
+<p>app/component.ts</p>
+</blockquote>
+<p>The root component.</p>
+<p>When we need some services that need to be started at the beginning, we need to write code here.</p>
+<h2 id="angular-html">Angular Html</h2>
+<blockquote>
+<p>app/app.component.html</p>
+</blockquote>
+<p>View section.</p>
+<p>To call root components and plug-and-play components, you need to write code here.</p>
+<h1 id="angular-service">Angular Service</h1>
+<p><img src="https://gitee.com/xiaobin80/cnblogs/raw/master/images/UserDetailsClient-static.png" alt="angular chrome">
+<a href="http://localhost:4260/">run port</a></p>
+<p>Generate service and model:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">ng</span><span style="color:#9ECBFF"> generate</span><span style="color:#9ECBFF"> service</span><span style="color:#9ECBFF"> user/user</span></span>
+<span class="line"><span style="color:#B392F0">ng</span><span style="color:#9ECBFF"> generate</span><span style="color:#9ECBFF"> class</span><span style="color:#9ECBFF"> user/user</span><span style="color:#79B8FF"> --type=model</span></span></code></pre>
+<p>Every service must use Dependency Injection.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#E1E4E8">@</span><span style="color:#B392F0">Injectable</span><span style="color:#E1E4E8">(providedIn: </span><span style="color:#9ECBFF">'root'</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<h2 id="creating-observables"><a href="https://angular.io/guide/observables#creating-observables">Creating observables</a></h2>
+<p>Use the Observable constructor to create an observable stream of any type.
+The constructor takes as its argument the subscriber function to run when the observable’s subscribe() method executes.</p>
+<ul>
+<li>Get</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#B392F0">getUsers</span><span style="color:#E1E4E8">(): Observable</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">UserModel[]</span><span style="color:#F97583">></span></span></code></pre>
+<ul>
+<li>Post
+About the post method: The return value must be “Observable<any>”!</any></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#B392F0">postUser</span><span style="color:#E1E4E8">(userModel: UserModel): Observable</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">any</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> {</span><span style="color:#6A737D">// your code here}</span></span></code></pre>
+<h2 id="call-them">call them</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#79B8FF">    this</span><span style="color:#E1E4E8">.userservice.</span><span style="color:#B392F0">getUsers</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">subscribe</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#FFAB70">      data</span><span style="color:#F97583"> =></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">        this</span><span style="color:#E1E4E8">.users </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> data;</span></span>
+<span class="line"><span style="color:#E1E4E8">        console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(data);</span></span>
+<span class="line"><span style="color:#E1E4E8">    });</span></span></code></pre>
+<h1 id="angular-component-1">Angular Component</h1>
+<ul>
+<li>generate</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">ng</span><span style="color:#9ECBFF"> generate</span><span style="color:#9ECBFF"> component</span><span style="color:#9ECBFF"> sign-up</span></span></code></pre>
+<ul>
+<li>call</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#79B8FF">app-sign-up</span><span style="color:#E1E4E8">>&#x3C;/</span><span style="color:#79B8FF">app-sign-up</span><span style="color:#E1E4E8">></span></span></code></pre>
+<h2 id="add-component">add component</h2>
+<blockquote>
+<p>app/app.module.ts</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#E1E4E8">@</span><span style="color:#B392F0">NgModule</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  declarations: [</span></span>
+<span class="line"><span style="color:#E1E4E8">    AppComponent,</span></span>
+<span class="line"><span style="color:#E1E4E8">    SignUpComponent</span></span>
+<span class="line"><span style="color:#E1E4E8">  ],</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#B392F0">imports</span><span style="color:#E1E4E8">: [</span></span>
+<span class="line"><span style="color:#E1E4E8">    BrowserModule,</span></span>
+<span class="line"><span style="color:#E1E4E8">    ReactiveFormsModule</span></span>
+<span class="line"><span style="color:#E1E4E8">  ],</span></span></code></pre>
+<h1 id="appendix">Appendix</h1>
+<h2 id="project-code">Project code</h2>
+<blockquote>
+<p>The token is not used in the demo.</p>
+</blockquote>
+<ul>
+<li><a href="https://github.com/tdtc-hrb/userDetails-client">userDetails-client</a></li>
+</ul>
+<h2 id="reactive-forms">Reactive Forms</h2>
+<p>Use FormBuilder, FormGroup to implement applications.</p>
+<p>see<sup>3</sup>, It should be noted that the verification part in html(sign-up.component.html) needs to refer to <sup>4</sup>.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#E1E4E8">signUpForm.controls[</span><span style="color:#9ECBFF">'xxx'</span><span style="color:#E1E4E8">].yyy</span></span></code></pre>
+<h2 id="authorization">Authorization</h2>
+<p>在<a href="https://github.com/tdtc-hrb/UserDetails-jwt-client">实际应用</a>中：使用用户名和密码登录，获得Token值。<br>
+<img src="https://gitee.com/xiaobin80/cnblogs/raw/master/images/UserDetailsJwtClient.png" alt="chrome shot"></p>
+<p>最后，在http头添加token值, See<a href="https://angular.io/guide/http#adding-and-updating-headers">《Adding and updating headers》</a>.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { HttpHeaders } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> '@angular/common/http'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> httpOptions</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  headers: </span><span style="color:#F97583">new</span><span style="color:#B392F0"> HttpHeaders</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#9ECBFF">    'Content-Type'</span><span style="color:#E1E4E8">:  </span><span style="color:#9ECBFF">'application/json'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    Authorization: </span><span style="color:#9ECBFF">'my-auth-token'</span></span>
+<span class="line"><span style="color:#E1E4E8">  })</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<p>Angular applies interceptors in the order that you provide them.<br>
+For example, consider a situation in which you want to handle the authentication<br>
+of your HTTP requests and log them before sending them to a server.<br>
+To accomplish this task, you could provide an AuthInterceptor service and then a LoggingInterceptor service.<br>
+Outgoing requests would flow from the AuthInterceptor to the LoggingInterceptor.<br>
+Responses from these requests would flow in the other direction, from LoggingInterceptor back to AuthInterceptor.<br>
+The following is a visual representation of the process:</p>
+<p><img src="https://angular.io/generated/images/guide/http/interceptor-order.svg" alt="angular auth"></p>
+<h1 id="ref">Ref</h1>
+<ul>
+<li><a href="https://angular.io/guide/http">Communicating with backend services using HTTP</a></li>
+<li><a href="https://angular.io/guide/observables">Using observables to pass values</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/angular-reactive-forms-introduction/"><sup>3</sup>How To Use Reactive Forms in Angular</a></li>
+<li><a href="https://edupala.com/angular-reactive-form-validation/"><sup>4</sup>How to implement angular reactive forms validation in Angular 12 .?</a></li>
+<li><a href="https://stackoverflow.com/questions/51990188/the-semantics-of-injectableprovidedin-root">The semantics of @Injectable(providedIn: ‘root’)?</a></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>When you write @Injectable(providedIn: 'root') this means that the service in singletion </span></span>
+<span class="line"><span>for whole application and you can inject in anywhere in the application.</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>When you want to make service singleton only for an exact module, you need to assign </span></span>
+<span class="line"><span>your module as the parameter to the providedIn - @Injectable(providedIn: MyModule)</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>The only other action required in order to use the @Injectable decorated service is </span></span>
+<span class="line"><span>to import it and constructor inject it and that's it. </span></span>
+<span class="line"><span>No need to import it in the AppModule.</span></span></code></pre>
+<ul>
+<li><a href="https://dev-mind.fr/blog/2024/server_side_rendering.html">About SSR</a></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>SSR is a good option for static websites whose content doesn't change frequently. </span></span></code></pre>  <footer> <a href="https://tdtc-hrb.github.io/blog-frontend">blog-frontend</a> <a href="https://tdtc-hrb.github.io/com-vc">com-vc</a> <a href="https://tdtc-hrb.github.io/css-tws">css-tws</a> <a href="https://tdtc-hrb.github.io/ops-win">ops-win</a> </footer> </body></html>
