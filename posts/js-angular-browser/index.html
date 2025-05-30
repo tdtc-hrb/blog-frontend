@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.8.1"><title>platform-browser</title></head> <body> <h1>platform-browser</h1>  <p><em>platform-browser vs. platform-browser-dynamic</em></p> <p>2025-05-29</p> <p>Written by: tdtc</p> <p><a href="https://stackoverflow.com/a/40338777">browser vs browser-dynamic</a></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>The difference between platform-browser-dynamic and platform-browser is the way your Angular app will be compiled.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Using the dynamic platform makes Angular send the just-in-time compiler to the front-end along with your application. </span></span>
+<span class="line"><span>Which means your application is being compiled client-side.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>On the other hand, using platform-browser leads to an ahead-of-time pre-compiled version of your application being sent to the browser. </span></span>
+<span class="line"><span>Which usually means a significantly smaller package is sent to the browser.</span></span></code></pre>
+<ul>
+<li>v19</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';</span></span>
+<span class="line"><span>import { AppModule } from './app/app.module';</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>platformBrowserDynamic().bootstrapModule(AppModule, {</span></span>
+<span class="line"><span>  ngZoneEventCoalescing: true,</span></span>
+<span class="line"><span>})</span></span>
+<span class="line"><span>  .catch(err => console.error(err));</span></span></code></pre>
+<ul>
+<li>v20</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>import { platformBrowser } from '@angular/platform-browser';</span></span>
+<span class="line"><span>import { AppModule } from './app/app-module';</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>platformBrowser().bootstrapModule(AppModule, {</span></span>
+<span class="line"><span>  ngZoneEventCoalescing: true,</span></span>
+<span class="line"><span>})</span></span>
+<span class="line"><span>  .catch(err => console.error(err));</span></span></code></pre>
+<h3 id="explanation"><a href="http://niisar.blogspot.com/2016/11/platform-browser-vs-platform-browser.html">Explanation</a></h3>
+<ul>
+<li>@angular/platform-browser</li>
+</ul>
+<ol>
+<li>It contains code shared for browser execution (DOM thread, WebWorker)</li>
+<li>Ahead-of-Time pre-compiled version of application being sent to the browser.
+Which usually means a significantly smaller package being sent to the browser.</li>
+</ol>
+<ul>
+<li>@angular/platform-browser-dynamic</li>
+</ul>
+<ol>
+<li>It contains the client side code that processes templates (bindings, components, …) and reflective dependency injection.</li>
+<li>Uses Just-in-Time compiler and make’s application compile on client-side.</li>
+</ol>
+<p>When the offline template compiler is used, platform-browser-dynamic isn’t necessary because all reflective access
+and metadata are converted to generated code.</p>  <footer> <a href="https://tdtc-hrb.github.io/blog-frontend">blog-frontend</a> <a href="https://tdtc-hrb.github.io/com-vc">com-vc</a> <a href="https://tdtc-hrb.github.io/css-tws">css-tws</a> <a href="https://tdtc-hrb.github.io/ops-win">ops-win</a> </footer> </body></html>
