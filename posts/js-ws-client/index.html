@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.9.1"><title>Writing WebSocket client applications</title></head> <body> <h1>Writing WebSocket client applications</h1>  <p><em>WebSocket(), send(), onmessage(), close()</em></p> <p>2025-06-09</p> <p>Written by: tdtc</p> <p><a href="https://caniuse.com/?search=websocket">Req</a> ：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Android Browser: v4.4+</span></span>
+<span class="line"><span>Safari supported: v5/6+</span></span></code></pre>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket">WebSocket()</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/send">send()</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/message_event">onmessage()</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close">close()</a></li>
+</ul>
+<h2 id="creating-a-websocket-object">Creating a WebSocket object</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>webSocket = new WebSocket(url, protocols);</span></span></code></pre>
+<ul>
+<li>protocols</li>
+</ul>
+<blockquote>
+<p>Optional</p>
+</blockquote>
+<h3 id="uri-schemes"><a href="https://www.rfc-editor.org/rfc/rfc6455#section-11.1">URI Schemes</a></h3>
+<ul>
+<li>wss</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Equivalent to HTTPs.</span></span></code></pre>
+<p>Connection confidentiality and integrity is provided by running the WebSocket Protocol over TLS (wss URIs).</p>
+<h3 id="connection-errors">Connection errors</h3>
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc6455#section-7.4.1">Status Codes</a></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1000 ~ 1011,  1015</span></span></code></pre>
+<h3 id="examples">Examples</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>const exampleSocket = new WebSocket(</span></span>
+<span class="line"><span>  "wss://www.example.com/socketserver"</span></span>
+<span class="line"><span>);</span></span></code></pre>
+<h2 id="sending-data-to-the-server">Sending data to the server</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>exampleSocket.send("Here's some text that the server is urgently awaiting!");</span></span></code></pre>
+<p>You can send data as a string, Blob, or ArrayBuffer.</p>
+<h3 id="using-json-to-transmit-objects">Using JSON to transmit objects</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>// Send text to all users through the server</span></span>
+<span class="line"><span>function sendText() {</span></span>
+<span class="line"><span>  // Construct a msg object containing the data the server needs to process the message from the chat client.</span></span>
+<span class="line"><span>  const msg = {</span></span>
+<span class="line"><span>    type: "message",</span></span>
+<span class="line"><span>    text: document.getElementById("text").value,</span></span>
+<span class="line"><span>    id: clientID,</span></span>
+<span class="line"><span>    date: Date.now(),</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  // Send the msg object as a JSON-formatted string.</span></span>
+<span class="line"><span>  exampleSocket.send(JSON.stringify(msg));</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  // Blank the text input element, ready to receive the next line of text from the user.</span></span>
+<span class="line"><span>  document.getElementById("text").value = "";</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<h2 id="receiving-messages-from-the-server">Receiving messages from the server</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>exampleSocket.onmessage = (event) => {</span></span>
+<span class="line"><span>  console.log(event.data);</span></span>
+<span class="line"><span>};</span></span></code></pre>
+<h3 id="receiving-and-interpreting-json-objects">Receiving and interpreting JSON objects</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>exampleSocket.onmessage = (event) => {</span></span>
+<span class="line"><span>  const f = document.getElementById("chat-box").contentDocument;</span></span>
+<span class="line"><span>  let text = "";</span></span>
+<span class="line"><span>  const msg = JSON.parse(event.data);</span></span>
+<span class="line"><span>  const time = new Date(msg.date);</span></span>
+<span class="line"><span>  const timeStr = time.toLocaleTimeString();</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  switch (msg.type) {</span></span>
+<span class="line"><span>    case "id":</span></span>
+<span class="line"><span>      clientID = msg.id;</span></span>
+<span class="line"><span>      setUsername();</span></span>
+<span class="line"><span>      break;</span></span>
+<span class="line"><span>    case "username":</span></span>
+<span class="line"><span>      text = `User &#x3C;em>${msg.name}&#x3C;/em> signed in at ${timeStr}&#x3C;br>`;</span></span>
+<span class="line"><span>      break;</span></span>
+<span class="line"><span>    case "message":</span></span>
+<span class="line"><span>      text = `(${timeStr}) ${msg.name} : ${msg.text} &#x3C;br>`;</span></span>
+<span class="line"><span>      break;</span></span>
+<span class="line"><span>    case "reject-username":</span></span>
+<span class="line"><span>      text = `Your username has been set to &#x3C;em>${msg.name}&#x3C;/em> because the name you chose is in use.&#x3C;br>`;</span></span>
+<span class="line"><span>      break;</span></span>
+<span class="line"><span>    case "user-list":</span></span>
+<span class="line"><span>      document.getElementById("user-list-box").innerText = msg.users.join("\n");</span></span>
+<span class="line"><span>      break;</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  if (text.length) {</span></span>
+<span class="line"><span>    f.write(text);</span></span>
+<span class="line"><span>    document.getElementById("chat-box").contentWindow.scrollByPages(1);</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>};</span></span></code></pre>
+<h2 id="closing-the-connection">Closing the connection</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>exampleSocket.close();</span></span></code></pre>
+<h2 id="ref">Ref</h2>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications">Writing WebSocket client applications</a></li>
+</ul>  <footer> <a href="https://tdtc-hrb.github.io/blog-frontend">blog-frontend</a> <a href="https://tdtc-hrb.github.io/com-vc">com-vc</a> <a href="https://tdtc-hrb.github.io/css-tws">css-tws</a> <a href="https://tdtc-hrb.github.io/ops-win">ops-win</a> </footer> </body></html>
